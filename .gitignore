@@ -124,6 +124,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.venv_*
 env/
 venv/
 ENV/
@@ -164,3 +165,9 @@ cython_debug/
 old/
 .vscode/
 .DS_Store
+
+# Datasets
+*.parquet
+
+# Models
+*.cbm

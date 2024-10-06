@@ -1,0 +1,13 @@
+FROM python:3.10-slim
+
+COPY ./recommendations/online_recs.parquet /code/recommendations/online_recs.parquet
+COPY ./recsys_app /code/app
+COPY ./requirements-service.txt /code/requirements-service.txt
+
+WORKDIR /code
+
+RUN pip3 install --no-cache-dir -r requirements-service.txt
+
+EXPOSE ${FEATURES_SERVICE_PORT}
+
+CMD uvicorn app.features_service:app --port ${FEATURES_SERVICE_PORT} --host 0.0.0.0

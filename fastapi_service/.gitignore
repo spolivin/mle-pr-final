@@ -1,0 +1,2 @@
+# All log-files except test service logs
+!test_service.log

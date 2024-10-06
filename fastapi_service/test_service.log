@@ -1,0 +1,78 @@
+unittest_logger: INFO     Test 1: "Healthcheck status"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/healthy', method='GET'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"status":"healthy"}'
+unittest_logger: INFO     Test 1 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 2: "Default users check"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=5&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=1&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     Test 2 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 3: "User with personal recs check"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=54791&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[190000,118914,393028,116624,417927]}'
+unittest_logger: INFO     Test 3 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 4: "User without personal recs check"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=1&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     Test 4 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 5: "Online events test"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8002/put?user_id=1403769&item_id=869', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"result":"OK"}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8002/put?user_id=1403769&item_id=22926', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"result":"OK"}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8002/get?user_id=1403769&k=10', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"events":[22926,869]}'
+unittest_logger: INFO     Test 5 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 6: "User with online events check"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations_online?user_id=1403769', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[143418,46130,354233,159780,379390]}'
+unittest_logger: INFO     Test 6 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 7: "Offline recs check"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations_offline?user_id=1403769&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[312728,457045,455183,112782,11663]}'
+unittest_logger: INFO     Test 7 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 8: "Blended recommendations check"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=1403769&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[143418,312728,46130,457045,354233]}'
+unittest_logger: INFO     Test 8 PASS
+unittest_logger: INFO     ---------------------------------------------------------------------
+unittest_logger: INFO     Test 9: "Stats check"
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/stats', method='GET'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"request_personal_count":10,"request_default_count":10}'
+unittest_logger: INFO     Test 9 PASS
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=79627&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[22926,355994,37029,222888,89775]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=966&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=127&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=311&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=104829&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[441852,344723,241555,283115,208939]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=152693&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[10516,84310,40870,387373,272527]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=70&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=78724&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[438322,546,454818,248455,228392]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=718&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=77&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=544&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[29196,312728,119736,409804,445351]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=54791&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[190000,118914,393028,116624,417927]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=163049&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[84310,242905,457045,9877,51650]}'
+unittest_logger: INFO     >>> Request: url='http://0.0.0.0:8000/recommendations?user_id=152963&k=5', method='POST'
+unittest_logger: INFO     <<< Response: status_code='200', data='{"recs":[546,248455,359251,190536,112782]}'

@@ -1,0 +1,69 @@
+services:
+  main-app:
+    env_file:
+      - ../.env
+    build:
+      dockerfile: Dockerfile_main
+    ports:
+      - "${MAIN_APP_PORT}:${MAIN_APP_PORT}"
+    hostname: fastapi_app
+
+
+  offline-service:
+    env_file:
+      - ../.env
+    build:
+      dockerfile: Dockerfile_offline
+    ports:
+      - "${RECS_OFFLINE_SERVICE_PORT}:${RECS_OFFLINE_SERVICE_PORT}"
+    volumes:
+      - type: bind
+        source: ./recommendations
+        target: /code/recommendations
+    hostname: offline_app
+
+
+  events-service:
+    env_file:
+      - ../.env
+    build:
+      dockerfile: Dockerfile_events
+    ports:
+      - "${EVENTS_SERVICE_PORT}:${EVENTS_SERVICE_PORT}"
+    hostname: events_app
+
+
+  features-service:
+    env_file:
+      - ../.env
+    build:
+      dockerfile: Dockerfile_features
+    ports:
+      - "${FEATURES_SERVICE_PORT}:${FEATURES_SERVICE_PORT}"
+    volumes:
+      - type: bind
+        source: ./recommendations
+        target: /code/recommendations
+    hostname: features_app
+
+
+  prometheus:
+    image: prom/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    volumes:
+      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    hostname: prometheus
+
+
+  grafana:
+    image: grafana/grafana
+    env_file:
+      - ../.env
+    ports:
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASS}

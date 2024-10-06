@@ -1,0 +1,14 @@
+FROM python:3.10-slim
+
+COPY ./recommendations/default_recs.parquet /code/recommendations/default_recs.parquet
+COPY ./recommendations/candidates_ranked.parquet /code/recommendations/candidates_ranked.parquet
+COPY ./recsys_app /code/app
+COPY ./requirements-service.txt /code/requirements-service.txt
+
+WORKDIR /code
+
+RUN pip3 install --no-cache-dir -r requirements-service.txt
+
+EXPOSE ${RECS_OFFLINE_SERVICE_PORT}
+
+CMD uvicorn app.recs_offline_service:app --port ${RECS_OFFLINE_SERVICE_PORT} --host 0.0.0.0

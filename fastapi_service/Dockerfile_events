@@ -1,0 +1,12 @@
+FROM python:3.10-slim
+
+COPY ./recsys_app /code/app
+COPY ./requirements-service.txt /code/requirements-service.txt
+
+WORKDIR /code
+
+RUN pip3 install --no-cache-dir -r requirements-service.txt
+
+EXPOSE ${EVENTS_SERVICE_PORT}
+
+CMD uvicorn app.events_service:app --port ${EVENTS_SERVICE_PORT} --host 0.0.0.0

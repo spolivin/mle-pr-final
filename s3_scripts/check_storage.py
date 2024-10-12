@@ -27,19 +27,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
     "-o",
     "--option",
-    help="Option to check bucket contents or contents with space." + f"\n{HELP_MSG}"
+    help="Option to check bucket contents or contents with space." + f"\n{HELP_MSG}",
 )
 args = parser.parse_args()
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     # Loading environmental variables
     load_dotenv()
     # Instantiating a client
     client = YandexCloudClient(
         bucket_name=os.environ.get("S3_BUCKET_NAME"),
-        aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID_STUDENT'),
-        aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY_STUDENT'),
+        aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID_STUDENT"),
+        aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY_STUDENT"),
     )
 
     if args.option == OPTION_CONTENTS:

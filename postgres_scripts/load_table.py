@@ -34,7 +34,6 @@ connection.update(postgres_credentials)
 
 
 if __name__ == "__main__":
-
     try:
         extracted_table = extract_table(table_name=args.table_name)
     except UndefinedTable:

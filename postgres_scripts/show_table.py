@@ -27,10 +27,11 @@ postgres_credentials = {
 connection.update(postgres_credentials)
 
 
-def extract_table(table_name: str, connection: dict[str, str] = connection) -> pd.DataFrame:
+def extract_table(
+    table_name: str, connection: dict[str, str] = connection
+) -> pd.DataFrame:
     """Loads a table from Postgres and saves it as a DataFrame."""
     with psycopg.connect(**connection) as conn:
-
         with conn.cursor() as cur:
             cur.execute(f"SELECT * FROM {table_name}")
             data = cur.fetchall()

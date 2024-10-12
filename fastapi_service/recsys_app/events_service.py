@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 
 
-class EventStore():
+class EventStore:
     """Class for adding/retrieving online history."""
 
     def __init__(self, max_events_per_user: int = 10):
@@ -20,7 +20,7 @@ class EventStore():
         user_events = self.events[user_id][:k] if user_id in self.events else []
 
         return user_events
-    
+
 
 # Instantiating an object
 event_store = EventStore()
@@ -28,20 +28,21 @@ event_store = EventStore()
 # Creating an app
 app = FastAPI(title="events")
 
+
 @app.get("/healthy")
 async def healthy():
     """Displays status message."""
-    return {
-        "status": "healthy"
-    }
+    return {"status": "healthy"}
+
 
 # Integrating endpoints for the service
 @app.post("/put")
 async def put(user_id: int, item_id: int):
     """Add an event (item identifier) to the history."""
     event_store.put(user_id, item_id)
-    
+
     return {"result": "OK"}
+
 
 @app.post("/get")
 async def get(user_id: int, k: int):

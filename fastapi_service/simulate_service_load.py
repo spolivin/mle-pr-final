@@ -19,7 +19,7 @@ if __name__ == "__main__":
     for user_id in user_ids:
         user_params = {"user_id": user_id, "k": 5}
         res = send_test_request(
-            params=user_params, 
+            params=user_params,
             url="http://0.0.0.0:8000",
             endpoint="/recommendations",
         )

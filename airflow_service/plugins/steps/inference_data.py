@@ -18,27 +18,27 @@ def create_table():
     """Initializes the table in the database."""
 
     # Instantiating a PostgreSQL hook
-    postgres_hook = PostgresHook('destination_db')
+    postgres_hook = PostgresHook("destination_db")
 
     # Retrieving the connection object
     db_conn = postgres_hook.get_sqlalchemy_engine()
-    
+
     # Instantiating metadata object
     metadata = MetaData()
 
     # Creating the table
     candidates_inference_table = Table(
-        'candidates_inference',
+        "candidates_inference",
         metadata,
-        Column('id', BigInteger, primary_key=True, autoincrement=True),
-        Column('rec_id', BigInteger),
-        Column('user_id', BigInteger),
-        Column('item_id', BigInteger),
-        Column('als_score', Float),
-        Column('category_id', Integer),
-        Column('parent_id', Integer),
-        Column('available', Integer),
-        UniqueConstraint('rec_id', name='unique_rec_id_2_constraint'),
+        Column("id", BigInteger, primary_key=True, autoincrement=True),
+        Column("rec_id", BigInteger),
+        Column("user_id", BigInteger),
+        Column("item_id", BigInteger),
+        Column("als_score", Float),
+        Column("category_id", Integer),
+        Column("parent_id", Integer),
+        Column("available", Integer),
+        UniqueConstraint("rec_id", name="unique_rec_id_2_constraint"),
     )
 
     # Checking the existence of table in DB and adding a new table (if needed)
@@ -50,26 +50,26 @@ def extract(**kwargs):
     """Loads inference data from file."""
 
     data = pd.read_parquet(CANDIDATES_INFERENCE_PATH)
-    
+
     # Pushing the extracted data to the next task
-    ti = kwargs['ti']
-    ti.xcom_push('extracted_data', data)
+    ti = kwargs["ti"]
+    ti.xcom_push("extracted_data", data)
 
 
 def load(**kwargs):
     """Loads the extracted data to the database."""
 
-    postgres_hook = PostgresHook('destination_db')
+    postgres_hook = PostgresHook("destination_db")
 
     # Pulling the data from the previous task
-    ti = kwargs['ti']
-    data = ti.xcom_pull(task_ids='extract', key='extracted_data')
-    
+    ti = kwargs["ti"]
+    data = ti.xcom_pull(task_ids="extract", key="extracted_data")
+
     # Inserting data into a new table
     postgres_hook.insert_rows(
-            table="candidates_inference",
-            replace=True,
-            target_fields=data.columns.tolist(),
-            replace_index=['rec_id'],
-            rows=data.values.tolist()
+        table="candidates_inference",
+        replace=True,
+        target_fields=data.columns.tolist(),
+        replace_index=["rec_id"],
+        rows=data.values.tolist(),
     )

@@ -11,7 +11,7 @@ from recsys_app.constants import (
 )
 
 # Request components
-headers={'Content-type': 'application/json', 'Accept': 'text/plain'}
+headers = {"Content-type": "application/json", "Accept": "text/plain"}
 main_app_url = HOST_URL + ":" + str(MAIN_APP_PORT)
 events_url = HOST_URL + ":" + str(EVENTS_SERVICE_PORT)
 
@@ -22,14 +22,20 @@ logger.setLevel(logging.INFO)
 file_handler = logging.FileHandler("test_service.log")
 file_handler.setLevel(logging.INFO)
 # Configuring formatter for log message format
-formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+formatter = logging.Formatter("%(name)-12s: %(levelname)-8s %(message)s")
 file_handler.setFormatter(formatter)
 # Adding all configs to the logger
 logger.addHandler(file_handler)
 
+
 def get_server_info(response):
-    logger.info(f">>> Request: url='{response.request.url}', method='{response.request.method}'")
-    logger.info(f"<<< Response: status_code='{response.status_code}', data='{response.text}'")
+    logger.info(
+        f">>> Request: url='{response.request.url}', method='{response.request.method}'"
+    )
+    logger.info(
+        f"<<< Response: status_code='{response.status_code}', data='{response.text}'"
+    )
+
 
 def send_test_request(params, url, endpoint, headers=headers):
     """Sends a test request to a url/endpoint."""
@@ -40,7 +46,7 @@ def send_test_request(params, url, endpoint, headers=headers):
     else:
         recs = []
         print(f"status code: {resp.status_code}")
-    
+
     return recs
 
 
@@ -65,12 +71,16 @@ class TestRecommendationsService(unittest.TestCase):
         logger.info('Test 2: "Default users check"')
         params_user_5 = {"user_id": user_id_1, "k": 5}
         response_user_5 = send_test_request(
-            params=params_user_5, url=main_app_url, endpoint="/recommendations",
+            params=params_user_5,
+            url=main_app_url,
+            endpoint="/recommendations",
         )
         # Getting recommendations for user_id=1
         params_user_1 = {"user_id": user_id_2, "k": 5}
         response_user_1 = send_test_request(
-            params=params_user_1, url=main_app_url, endpoint="/recommendations",
+            params=params_user_1,
+            url=main_app_url,
+            endpoint="/recommendations",
         )
 
         self.assertEqual(response_user_5["recs"], response_user_1["recs"])
@@ -82,7 +92,9 @@ class TestRecommendationsService(unittest.TestCase):
         logger.info('Test 3: "User with personal recs check"')
         params = {"user_id": user_id, "k": 5}
         response = send_test_request(
-            params=params, url=main_app_url, endpoint="/recommendations",
+            params=params,
+            url=main_app_url,
+            endpoint="/recommendations",
         )
 
         self.assertIsInstance(response["recs"], list)
@@ -95,7 +107,9 @@ class TestRecommendationsService(unittest.TestCase):
         logger.info('Test 4: "User without personal recs check"')
         params = {"user_id": user_id, "k": 5}
         response = send_test_request(
-            params=params, url=main_app_url, endpoint="/recommendations",
+            params=params,
+            url=main_app_url,
+            endpoint="/recommendations",
         )
 
         self.assertIsInstance(response["recs"], list)
@@ -103,10 +117,10 @@ class TestRecommendationsService(unittest.TestCase):
         logger.info("Test 4 PASS")
 
     def test_5_online_history(
-            self, 
-            user_id: int = 1403769,
-            events: list = [869, 22926],
-        ):
+        self,
+        user_id: int = 1403769,
+        events: list = [869, 22926],
+    ):
         """Tests if the online history is added upon request."""
         logger.info("-" * 69)
         logger.info('Test 5: "Online events test"')
@@ -132,7 +146,9 @@ class TestRecommendationsService(unittest.TestCase):
         logger.info('Test 6: "User with online events check"')
         params = {"user_id": user_id}
         response = send_test_request(
-            params=params, url=main_app_url, endpoint="/recommendations_online",
+            params=params,
+            url=main_app_url,
+            endpoint="/recommendations_online",
         )
 
         self.assertIsInstance(response["recs"], list)
@@ -145,7 +161,9 @@ class TestRecommendationsService(unittest.TestCase):
         logger.info('Test 7: "Offline recs check"')
         params = {"user_id": user_id, "k": 5}
         response = send_test_request(
-            params=params, url=main_app_url, endpoint="/recommendations_offline",
+            params=params,
+            url=main_app_url,
+            endpoint="/recommendations_offline",
         )
 
         self.assertIsInstance(response["recs"], list)
@@ -158,7 +176,9 @@ class TestRecommendationsService(unittest.TestCase):
         logger.info('Test 8: "Blended recommendations check"')
         params = {"user_id": user_id, "k": 5}
         response = send_test_request(
-            params=params, url=main_app_url, endpoint="/recommendations",
+            params=params,
+            url=main_app_url,
+            endpoint="/recommendations",
         )
 
         self.assertIsInstance(response["recs"], list)
@@ -176,10 +196,11 @@ class TestRecommendationsService(unittest.TestCase):
         # Separating stats
         response_default_stats = response["request_default_count"]
         response_personal_stats = response["request_personal_count"]
-        
+
         self.assertGreater(response_default_stats, 0)
         self.assertGreater(response_personal_stats, 0)
         logger.info("Test 9 PASS")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -12,9 +12,9 @@ logger = logging.getLogger("uvicorn.error")
 logging.basicConfig(level=logging.INFO)
 
 
-class Recommender():
+class Recommender:
     """Class for generating offline recommendations."""
-    
+
     def __init__(self):
         """Initializes a class instance."""
         # Attribute for storing rec-data
@@ -66,8 +66,10 @@ async def lifespan(app: FastAPI):
 
     yield {"rec_store": rec_store}
 
+
 # Creating an app
 app = FastAPI(title="recommendations_offline", lifespan=lifespan)
+
 
 # Endpoint for getting offline recommendations
 @app.post("/get_recs")
@@ -79,12 +81,12 @@ async def recommendations(request: Request, user_id: int, k: int):
 
     return i2i
 
+
 @app.get("/healthy")
 async def healthy():
     """Displays status message."""
-    return {
-        "status": "healthy"
-    }
+    return {"status": "healthy"}
+
 
 @app.get("/get_stats")
 async def get_stats(request: Request):

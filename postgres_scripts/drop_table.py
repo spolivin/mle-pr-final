@@ -29,7 +29,6 @@ connection.update(postgres_credentials)
 def drop_table(table_name: str, connection: dict[str, str] = connection) -> None:
     """Drops a table from Postgres DB."""
     with psycopg.connect(**connection) as conn:
-
         with conn.cursor() as cur:
             cur.execute(f"DROP TABLE {table_name}")
 

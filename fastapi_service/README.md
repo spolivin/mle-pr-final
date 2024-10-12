@@ -8,13 +8,13 @@
 
 ```bash
 # Loading default recommendations from DB
-python postgres_scripts load_table.py --table-name=default_recs
+python postgres_scripts/load_table.py --table-name=default_recs
 
 # Loading online recommendations from DB
-python postgres_scripts load_table.py --table-name=online_recs
+python postgres_scripts/load_table.py --table-name=online_recs
 
 # Loading personal ranked recommendations from DB
-python postgres_scripts load_table.py --table-name=candidates_ranked
+python postgres_scripts/load_table.py --table-name=candidates_ranked
 ```
 
 Конфигурационный файл [`docker-compose.yaml`](./docker-compose.yaml) устроен так, что директория `recommendations` примонтирована к соответствующим контейнерам, таким образом файлы можно обновлять без необходимости пересборки образов. Тем не менее, в том случае, что файлы обновляются следует перезапустить сервисы, поскольку старые версии файлов уже загружены на сервер:

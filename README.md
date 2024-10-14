@@ -2,86 +2,80 @@
 
 ## Objective
 
-Цель данного репозитория состоит в построении рекомендательной системы товаров для пользователей, а также ее выкатке с production-среду и поддержке при помощи различных фреймворков и сервисов.
+The purpose of this repository is to build a recommendation system of goods for users as well as deploy it in the production environment and support it via various frameworks and services.
 
 
 ## Metrics
 
-Задачей, которую нам предстоит решить для достижения цели, является оптимизация системы рекомендаций для действий пользователей по добавлению товаров в корзину посредством максимизации следующих метрик:
+The task which we are going to solve for fulfilling the project objective is optimizing the system of recommendations for users' actions of adding the goods to the cart via maximization of the following metrics:
 
 * `precision@10`
 * `recall@10`
 
-Выбор этих метрик обусловлен их частотностью использования для оценивания качества рекомендательных систем, а также тем, что в данном случае наш фокус будет на релевантности рекомендаций для пользователей, что данные метрики позволяют математически рассчитать. Скорее всего пользователи увидят только некоторую часть рекомендаций, поэтому в данной задаче будем рассматривать первые 10 рекомендаций и на основе них делать выводы о качестве различных рекомендаций.
+The choice of such metrics can be explained by their popularity of usage for evaluating the quality of recommendation systems as well as by the fact that in this case our focus will be upon relevance of recommendations for users and such metrics enable mathematically calculating it. It is logical that users will only see a part of the recommendations we generate for them so in this project we are going to consider the first 10 recommendations while computing metric values and hence making a decision about the quality of the recommendation system.
 
-Метрика `precision@10` позволит нам сказать, нравится ли рекомендованный товар пользователю, а посредством `recall@10` мы сможем судить о способности модели находить и предугадывать все предпочтения пользователя. 
+`precision@10` metric will allow us to say whether a recommended item is liked by a user, whilst by `recall@10` metric we will be able to judge about the ability of the system to detect and anticipate users' preferences.
 
 ## Project structure
 
-Проект разделен в целом на несколько блоков, каждый из которых поименован и описан в таблице ниже:
+Project is divided into several blocks where each one is described in the table below:
 
 | Component | Description | Frameworks | Link    |
 | :---   | :--- | :---: | :---: |
-| **Modeling experiments** | Разворачивание сервиса *Mlflow* с хранилищем артефактов и построение и оптимизация системы рекомендаций товаров | `mlflow` `catboost` `implicit` `sklearn`| [recsys](./recsys/) |
-| **Pipelines** | Развертывание мультиконтейнерного сервисе *Airflow* в среде *Docker* и создание пайплайнов загрузки данных и переобучения модели | `docker` `docker-compose` `airflow` `catboost` | [airflow_service](./airflow_service/) |
-| **Web-service deployment** | Развертывание *FastAPI* сервиса рекомендаций в среде *Docker* с дополнительным мониторингом метрик через *Prometheus* и *Grafana*| `docker` `docker-compose` `fastapi` `prometheus` `grafana` `requests`| [fastapi_service](./fastapi_service/) |
+| **Modeling experiments** | Deploying *Mlflow* service with the artifact store and building/optimization of the goods recommendation system | `mlflow` `catboost` `implicit` `sklearn`| [recsys](./recsys/) |
+| **Pipelines** | Deploying multi-container *Airflow* service in *Docker* environment and creating pipelines of data loading and re-training of the model | `docker` `docker-compose` `airflow` `catboost` | [airflow_service](./airflow_service/) |
+| **Web-service deployment** | Deploying *FastAPI* service of recommendations in the *Docker* environment with an additonal monitoring system via *Prometheus* and *Grafana* | `docker` `docker-compose` `fastapi` `prometheus` `grafana` `requests`| [fastapi_service](./fastapi_service/) |
 
-Переходя на каждую из ссылок в последней колонке таблицы, можно переходить в соответствующую директорию с подробным описанием в соответствующем `README`.
+By accessing each link in the last column of the table, one can access the respective directory with a detailed description in the respective `README`.
 
 ## Additional toolbox
-В качестве дополнительных инструментов работы с облачным хранилищем *S3* и базой данных *PostgreSQL*, есть отдельные папки для автоматизации некоторых рутинных задач:
+
+This repository is also equipped with additional tools for working with *S3* cloud storage and *PostgreSQL* database where each has a dedicated folder with useful scripts:
 
 | Component | Description | Frameworks | Link    |
 | :---   | :--- | :---: | :---: |
-| **S3 Object Storage** | Сборка скриптов для отправки файлов в облако, а также просмотр содержания *S3*-бакета и доступного места | `boto3` | [s3_scripts](./s3_scripts/) |
-| **PostgreSQL** | Сборка скриптов для удаления, загрузки и просмотра таблиц из *Postgres* | `psycopg2` | [postgres_scripts](./postgres_scripts/) |
+| **S3 Object Storage** | Compilation of scripts for pushing files to cloud as well as checking the contents/space in *S3*-bucket | `boto3` | [s3_scripts](./s3_scripts/) |
+| **PostgreSQL** | Compilation of scripts for dropping, loading and inspecting tables from *Postgres* | `psycopg2` | [postgres_scripts](./postgres_scripts/) |
 
 ### Interacting with S3
 
-В папке [s3_scripts](./s3_scripts/) можно найти скрипты для удобного взаимодействия с облачным хранилищем. На данный момент ряд действий включает самые основные:
+Folder [s3_scripts](./s3_scripts/) contains scripts for convenient interaction with cloud storage. The present version contains the most basic ones:
 
-1. **Просмотр содержимого хранилища**
+1. **Inspecting *S3*-bucket contents/space**
 
-Для просмотра файлов в бакете можно воспользоваться следующей командой:
 ```bash
 python s3_scripts/check_storage.py --option=contents
 ```
-
-При необходимости можно вывести и размер файла, запустив:
 
 ```bash
 python s3_scripts/check_storage.py --option=space
 ```
 
-2. **Загрузка файлов в S3**
-
-Если нужно загрузить какой-то файл в облачное хранилище вне системы экспериментов *Mlflow*, то можно использовать следующую команду для случайного файла:
+2. **Pushing files to S3**
 
 ```bash
 python s3_scripts/push_file.py --local-file-path=data/test.parquet --s3-file-path=recsys/test/test.parquet
 ```
 
->Note: в данном случае необходимо прописать полный путь до файла в локальной директории и желаемый путь до файла в облачном хранилище
+>Note: In this case one needs to specify the full path to a file in the local directory and the desired path to this file in the cloud storage
 
 ### Interacting with Postgres
 
-На данный момент есть следующие скрипты для произведения действий с базой данных:
-
-1. **Просмотр таблицы**
+1. **Inspecting table**
 
 ```bash
 python postgres_scripts/show_table.py --table-name=<table_name>
 ```
 
-2. **Загрузка таблицы из БД в локальную директорию**
+2. **Loading/saving Postgres table locally**
 
 ```bash
 python postgres_scripts/load_table.py --save-dir=<save_dir> --table-name=<table_name>
 ```
 
->Note: При запуске скрипта из корневой директории нет необходимости указывать `--save-dir`, нужная таблица загрузится в нужную директорию в соответствии с дефолтным путем
+>Note: Upon running the script from the root directory there is no need to specify `--save-dir`, as the required table will be loaded to the needed folder in accordance with the default path
 
-3. **Удаление таблицы из БД**
+3. **Dropping Postgres table**
 
 ```bash
 python postgres_scripts/drop_table.py --table-name=<table_name>

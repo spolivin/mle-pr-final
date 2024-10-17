@@ -1,10 +1,10 @@
 # FastAPI Web-Service
 
-Данная директория посвящена созданию и развертыванию приложения *FastAPI* и интеграции в него наших рекомендаций для возможности делать к нему запросы и получать рекомендации.
+The current directory is dedicated to creating and deploying *FastAPI* application with an integration of the recommendations generated for being able to send requests to the API and obtain recommendations for a user.
 
-## Загрузка/обновление рекомендаций
+## Loading/updating recommendations
 
-Для работы сервиса необходимо для начала загрузить файлы с рекомендациями. Это можно сделать при помощи следующих команд из корневой директории (чтобы иметь доступ к последним версиям рекомендаций):
+For the web service to work, one needs to firstly load files with recommendations. This can be done by running the following commands from the root directory (in order to be able to have access to the latest versions of recommendations):
 
 ```bash
 # Loading default recommendations from DB
@@ -17,23 +17,23 @@ python postgres_scripts/load_table.py --table-name=online_recs
 python postgres_scripts/load_table.py --table-name=candidates_ranked
 ```
 
-Конфигурационный файл [`docker-compose.yaml`](./docker-compose.yaml) устроен так, что директория `recommendations` примонтирована к соответствующим контейнерам, таким образом файлы можно обновлять без необходимости пересборки образов. Тем не менее, в том случае, что файлы обновляются следует перезапустить сервисы, поскольку старые версии файлов уже загружены на сервер:
+Configuration [`docker-compose.yaml`](./docker-compose.yaml) is created in such a way that `recommendations/` directory is mounted to the respective containers so that files could be updated without the necessity to re-build the images. Neverthless, in case of recommendations getting updated, one needs to restart the services, since the old recommendations have already been loaded to the server:
 
 ```bash
 cd fastapi_service
 docker compose restart
 ```
 
-## Запуск сервисов
+## Launching services
 
-Приложение рекомендаций можно запустить следующим образом:
+Recommendations application can be built in the following way:
 
 ```bash
 cd fastapi_service
 docker compose up --build
 ```
 
-После успешного запуска наши сервисы будут доступны на следующим портах:
+After successfully launching the applications, services will be accessible on the following ports:
 
 * Main application => http://localhost:8000
 * Offline recommendations service => http://localhost:8001
@@ -42,58 +42,54 @@ docker compose up --build
 * Grafana => http://localhost:3000
 * Prometheus => http://localhost:9090
 
-Запуск каждого из первых четырех сервисов приложения был перенесен в свой *Dockerfile*, каждый из которых собирается после запуска команды выше. Дополнительные контейнеры Grafana и Prometheus здесь же используются и создаются в целях мониторинга метрик приложения.
+Instructions for the launch of each of the first 4 services have been specified in their own *Dockerfile* where each service is built after running the above command, Additional containers (Grafana and Prometheus) are built here for monitoring the application metrics.
 
-## Тестирование сервиса
+## Testing recommendation service
 
-Мы можем также проверить работоспособность сервисов, запустив [следующий скрипт](./test_service.py) с основными тестами приложения:
+We can test the functionality of the application by running the [following script](./test_service.py) with basic tests:
 
 ```bash
 python test_service.py
 ```
 
-Результаты тестирования логируются в файл [`test_service.log`](./test_service.log). Дополнительно был создан скрипт [`simulate_service_load.py`](./simulate_service_load.py), который посылает ряд запросов в API с некоторой задержкой для проверки функционирования дашборда и метрик. Запускается так же:
+Testing results are logged to [`test_service.log`](./test_service.log). We have also additionally created [`simulate_service_load.py`](./simulate_service_load.py) script which sends a series of requests to the API with some delay for testing monitoring of metrics and dashboard:
 
 ```bash
 python simulate_service_load.py
 ```
 
-## Мониторинг приложения
+## Monitoring system
 
-Как уже упоминалось выше, для мониторинга используются Grafana и Prometheus. 
+Grafana and Prometheus are used for the monitoring of the application's metrics. 
 
-*Json*-файл дашборда можно посмотреть [тут](./dashboard.json), а для того чтобы увидеть сами визуализации метрик, необходимо сделать следующие шаги:
+*Json*-file of the dashboard can be seen [here](./dashboard.json), while actually using the prepared dashboard is done in the following way: 
 
-1. Запустить приложение через `docker compose up` (или `docker compose up --build`, если оно еще не собрано)
-2. Идти на http://localhost:3000 для доступа к UI Grafana, где в Datasources нам нужно указать Prometheus и URL сервиса http://prometheus:9090
-3. Запустить `python fix_datasource_uid.py`, что позволит использовать содержимое файла `dashboard.json` для показа
-4. На вкладке Dashboards выбрать Import->New, где вставить содержимое файла для доступа к дашборду и всем отслеживаемым метрикам.
+1. Launch application via `docker compose up` (or `docker compose up --build`, if the images have not been built yet)
+2. Go to http://localhost:3000 for accessing Grafana UI, where in Datasources we specify Prometheus и its URL: http://prometheus:9090
+3. Run `python fix_datasource_uid.py` in order to be able to use the contents of `dashboard.json` for importing the dashboard
+4. Go to Dashboards->Import->New, where after pasting the contents of the dashboard file one gets access to the ready dashboard.
 
-### Метрики мониторинга
+### Monitoring metrics
 
-Метрики, которые были выбраны для трэкинга работы приложения, разделяются на несколько групп:
-
-* *Инфраструктурный слой*
+* *Infrastructure layer*
 
     * **RAM Usage (MB)**
     * **CPU Usage change (%/min)**
 
-* *Бизнес слой*
+* *Business layer*
 
     * **Number of successful connections to online/offline recommendation services**
     * **Number of requests to personal recommendations**
     * **Number of requests to default recommendations**
 
 
-* *Прикладной слой*
+* *Service layer*
 
     * **Request duration change (%/min)**
     * **Scraping duration (seconds)**
 
 
-## Остановка приложения
-
-Для прекращения работы с приложением и сервисом, нужно остановить и удалить все контейнеры:
+## Stopping the application
 
 ```bash
 cd fastapi_service

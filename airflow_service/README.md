@@ -1,64 +1,60 @@
 # Pipelines
 
-Данная директория посвящена запуску сервиса *Airflow* и выполнению различных *DAG*-ов. 
+This directory is dedicated to running *Airflow* service and execution of *DAG*s. 
 
 ## Directory structure
 
-В данной директории присутствуют следующие структуры и файлы:
-
 | Element | Description |
 | :---   | :--- |
-| [`config`](./config/)| Конфигурационные файлы *Airflow* |
-| [`dags`](./dags/)| Скрипты запуска графов *Airflow* |
-| [`logs`](./logs/)| Логи с результами запусков *DAG*-ов |
-| [`plugins`](./plugins/)| Дополнительные модули для запуска графов |
-| [`Dockerfile`](./Dockerfile)| Кастомный *Dockerfile* |
-| [`docker-compose.yaml`](./docker-compose.yaml)| Файл с инструкциями запуска сервисов |
-| [`requirements-airflow.txt`](./requirements-airflow.txt)| Зависимости для запуска сервисов |
-| [`postgres_data`](./postgres_data/)| Данные для загрузки в базу данных, полученные на этапе экспериментов и моделирования |
+| [`config`](./config/)| *Airflow* configuration files|
+| [`dags`](./dags/)| Scripts for launching *Airflow* graphs |
+| [`logs`](./logs/)| Logs with *DAG* launches results |
+| [`plugins`](./plugins/)| Additional modules for running graphs |
+| [`Dockerfile`](./Dockerfile)| Custom *Dockerfile* |
+| [`docker-compose.yaml`](./docker-compose.yaml)| File with instructions on launching services in containers |
+| [`requirements-airflow.txt`](./requirements-airflow.txt)| Dependencies for launching *Airflow* services |
+| [`postgres_data`](./postgres_data/)| Data to be loaded into the database, obtained during experiments/modeling stage |
 
 ## Airflow service
 
-Для запуска сервиса *Airflow* мы заранее создали несколько папок:
+We have created several folders for launching *Airflow* services:
 
-* `config` => Хранение кастомных конфиг-файлов
-* `dags` => Хранение графов
-* `logs` => Хранение логов сервиса
-* `plugins` => Хранение дополнительных модулей для выполнения *DAG*-ов
+* `config` => Storing custom configs
+* `dags` => Storing graphs
+* `logs` => Storing service logs
+* `plugins` => Storing additional modules for running *DAG*s
 
-Разработчики *Airflow* подготовили множество инструкций по запуску сервисов, одной из которых является [`docker-compose.yaml`](./docker-compose.yaml) файл, который был предзагружен командой:
+*Airflow* developers have prepared a set of instructions for launching the services, one of which is [`docker-compose.yaml`](./docker-compose.yaml) file which has been downloaded via the following command:
 
 ```bash
 curl -LfO https://airflow.apache.org/docs/apache-airflow/2.7.3/docker-compose.yaml
 ```
 
-Поскольку мы будем использовать свое расширение образа из данного конфига, также был добавлен свой [`Dockerfile`](./Dockerfile), который используется при сборке образа.
+Since we are going to extend the image from `docker-compose.yaml`, we have also added our custom [`Dockerfile`](./Dockerfile) which is used for building the image.
 
->Note: Для ожидаемой работы сервиса было необходимо закоментировать строку 53 и раскоментировать строку 54 в [`docker-compose.yaml`](./docker-compose.yaml) для расширения образа (инструкция разработчиков Airflow)
+>Note: For the adequate functioning of the service, one needs to comment out line 53 and remove comment from line 54 in [`docker-compose.yaml`](./docker-compose.yaml) for extending the image
 
-### Запуск сервиса
+### Launching services
 
-Шаги ниже описывают последовательность коректного запуска сервисов *Airflow*:
-
-1. **Сохранение ID виртуальной машины**
+1. **Saving VM's ID**
 
 ```bash
 echo -e "\nAIRFLOW_UID=$(id -u)" >> .env
 ```
-2. **Создание учетной записи с логином и паролем**
+2. **Creating the account with a login and password**
 
 ```bash
 cd airflow_service
 docker compose up airflow-init
 ```
 
-3. **Очистка кэша после Шага 2**
+3. **Cleaning cache after Step 2**
 
 ```bash
 docker compose down --volumes --remove-orphans
 ```
 
-4. **Запуск**
+4. **Launch**
 
 ```bash
 docker compose up --build
@@ -66,44 +62,40 @@ docker compose up --build
 
 ### DAGs
 
-В папке [`dags`](./dags/) хранятся различные графы с установленными периодами запуска:
+[`dags`](./dags/) folder contains different graphs with the set periods of runs:
 
 | DAG | Purpose | Schedule (CRON) | Schedule (Periodicity) |
 | :---   | :--- | :--- | :--- |
-| [`load_default_recs.py`](./dags/load_default_recs.py)| Загрузка дефолтных рекомендаций в БД | *5 21 * * 6* | Каждую субботу в 21:05 |
-| [`load_online_recs.py`](./dags/load_online_recs.py)| Загрузка онлайн рекомендаций в БД | *5 21 * * 6* | Каждую субботу в 21:05 |
-| [`load_candidates_train.py`](./dags/load_candidates_train.py)| Загрузка тренировочных рекомендаций в БД | *10 21 * * 6* | Каждую субботу в 21:10 |
-| [`load_candidates_inference.py`](./dags/load_candidates_inference.py)| Загрузка тестовых рекомендаций в БД | *10 21 * * 6* | Каждую субботу в 21:10 |
-| [`load_candidates_ranked.py`](./dags/load_candidates_ranked.py)| Тренировка модели на тренировочных рекомендациях и ранжирование тестовых рекомендаций | *15 21 * * 6* | Каждую субботу в 21:15 |
+| [`load_default_recs.py`](./dags/load_default_recs.py)| Loading default recommendations to Postgres | *5 21 * * 6* | Every Saturday at 21:05 |
+| [`load_online_recs.py`](./dags/load_online_recs.py)| Loading online recommendations to Postgres | *5 21 * * 6* | Every Saturday at 21:05 |
+| [`load_candidates_train.py`](./dags/load_candidates_train.py)| Loading training recommendations to Postgres | *10 21 * * 6* | Every Saturday at 21:10 |
+| [`load_candidates_inference.py`](./dags/load_candidates_inference.py)| Loading test recommendations to Postgres | *10 21 * * 6* | Every Saturday at 21:10 |
+| [`load_candidates_ranked.py`](./dags/load_candidates_ranked.py)| Training the model on training recommendations and ranking test recommendations | *15 21 * * 6* | Every Saturday at 21:15 |
 
-Другими словами, мы недельно запланировали раны пайплайнов:
+In other words, we have come up with a weekly schedule of *DAG*-runs:
 
-* **Суббота 21:05** => Новые дефолтные и онлайн-рекомендации загружаются в базу данных;
-* **Суббота 21:10** => Загружаются тренировочные рекомендации для обучения модели, а также тестовые, которые нужно отранжировать;
-* **Суббота 21:15** => Модель обучается заново на новых тренировочных данных, а далее эта информация используется для ранжирования тестовых рекомендаций, которые затем также загружаются в базу данных.
-
-**Note:** Пожалуй, главным недостатком сервиса в текущей версии является то, что в случае обновления файлов в `postgres_data` придется пересобирать все сервисы заново, чтобы обновления попали в контейнер. Не было найдено альтернативного способа монтирования локальной директории к сервисам *Airflow*
+* **Saturday 21:05** => New default and online recommendations are loaded to the database;
+* **Saturday 21:10** => Loading of recommendations for training a ranking model as well as test recommendations which are to be ranked;
+* **Saturday 21:15** => Model is re-trained on new training recommendations and then this information is used for ranking test recommendations where are then also loaded to Postgres.
 
 ### Plugins 
 
-Также есть папка `plugins` с папкой [`steps`](./plugins/steps) с дополнительными модулями, описывающими шаги пайплайнов:
+There is an additional`plugins` directory with [`steps`](./plugins/steps) folder containing modules describing pipelines steps:
 
 | DAG | Purpose |
 | :---   | :--- |
-| [`default_recs.py`](./plugins/steps/default_recs.py)|Загрузка дефолтных рекомендаций в БД |
-| [`online_recs.py`](./plugins/steps/online_recs.py)| Загрузка онлайн рекомендаций в БД |
-| [`training_data.py`](./plugins/steps/training_data.py)| Загрузка тренировочных рекомендаций в БД |
-| [`inference_data.py`](./plugins/steps/inference_data.py)| Загрузка тестовых рекомендаций в БД |
-| [`ranked_data.py`](./plugins/steps/ranked_data.py)| Тренировка модели на тренировочных рекомендациях и ранжирование тестовых рекомендаций |
-| [`messages.py`](./plugins/steps/messages.py)| Коллбэки для сообщений о ходе выполнения *DAG* в *Telegram*|
+| [`default_recs.py`](./plugins/steps/default_recs.py)| Loading default recommendations to Postgres |
+| [`online_recs.py`](./plugins/steps/online_recs.py)| Loading online recommendations to Postgres |
+| [`training_data.py`](./plugins/steps/training_data.py)| Loading training recommendations to Postgres |
+| [`inference_data.py`](./plugins/steps/inference_data.py)| Loading test recommendations to Postgres |
+| [`ranked_data.py`](./plugins/steps/ranked_data.py)| Training the model on training recommendations and ranking test recommendations |
+| [`messages.py`](./plugins/steps/messages.py)| Callbacks for sending messages about the execution process of *DAG*s to *Telegram* in case of success or failure |
 
-Итак, в результате выполнения графов данные, загруженные после выполнения кода в [тетрадке](../recsys/recommendation_system.ipynb), отправляются в базу данных, где после выполнения графа `load_candidates_ranked.py` мы получаем (помимо других рекомендаций) персональные рекомендации для их использования в сервисе.
+Thus, as a result of running the graphs, the data loaded after executing the code in [notebook](../recsys/recommendation_system.ipynb) are sent to Postgres database where after successfully running `load_candidates_ranked.py` graph, we receive personal recommendations to be used in web service.
 
-На следующем шаге мы загружаем данные из базы данных в [папку с веб-сервисом](../fastapi_service/), откуда все три типа рекомендаций будут использоваться для выполнения запросов.
+The next step is to load the recommendations data from the database to [web service folder](../fastapi_service/), where all 3 types of recommendations will be used during sending requests to the API.
 
-## Остановка сервисов
-
-Для остановки всех сервисов после окончания работы с *Airflow* запускаем следующие команды:
+## Stopping services
 
 ```bash
 cd airflow_service

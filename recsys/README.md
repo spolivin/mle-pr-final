@@ -1,24 +1,22 @@
 # Modeling experiments
 
-Данная директория посвящена проведению исследовательского анализа данных с последующим запуском ряда экспериментов в среде *Mlflow* с хранилищем артефактов. 
+This directory is dedicated to conducting Exploratory Data Analysis (EDA) with a subsequent launch of a number of experiments in *MLflow* environment with artifact store.
 
 ## Directory structure
 
-Здесь хранятся следующие файлы и папки:
-
 | Element | Description |
 | :---   | :--- |
-| [`recommendation_system.ipynb`](./recommendation_system.ipynb)| Тетрадка с EDA и запуском экспериментов |
-| [`assets`](./assets/)| Папка с артефактами для логирования в *Mlflow* |
-| [`model_comparison`](./model_comparison/)| Папка с визуализациями сравнения разных ранжирующих моделей |
-| [`run_jupyter_server.sh`](./run_jupyter_server.sh)| Скрипт для запуска сервера *Jupyter* |
-| [`run_mlflow_server.sh`](./run_mlflow_server.sh)| Скрипт для запуска сервиса *Mlflow* с хранилищем артефактов |
+| [`recommendation_system.ipynb`](./recommendation_system.ipynb)| Jupyter notebook with the EDA and launched experiments |
+| [`assets`](./assets/)| Folder with artifacts logged in *MLflow* |
+| [`model_comparison`](./model_comparison/)| Visualizations of different ranking models comparisons |
+| [`run_jupyter_server.sh`](./run_jupyter_server.sh)| Script for launching *Jupyter* server |
+| [`run_mlflow_server.sh`](./run_mlflow_server.sh)| Script for launching *Mlflow* service with the artifact store |
 
-Отметим, что часть логируемых артефактов сохраняется в директории [assets](./assets/), в том время как другая часть представляет собой данные в формате `parquet`, которые не отслеживаются *Git* ради сохранения относительно небольшого размера репозитория.
+A part of the artifacts is saved in [assets](./assets/) directory, while the other one represents data in `parquet` format that are not tracked by *Git* for saving up on the space taken up by the repository.
 
-## Виртуальное окружение
+## Virtual environment
 
-Перед запуском кода в тетрадке, нужно сначала создать виртуальное окружение следующими командами из корневой директории:
+Before running the code in the Jupyter Notebook, one needs to create a virtual environment with the following commands from the root directory:
 
 ```bash
 # Preparing virtual env
@@ -29,37 +27,34 @@ source .venv_recsys/bin/activate
 pip install -r requirements.txt
 ```
 
-## Запуск сервера *Mlflow*
-Сервис *Mlflow* запускается следующим образом:
+## Launching *Mlflow* service
 
 ```bash
 cd recsys
 sh run_mlflow_server.sh
 ```
 
->Note: В случае успешного запуска сервис экспериментов будет доступен по адресу http://localhost:5000
+>Note: Upon successful launch, the service will be accessible at http://localhost:5000
 
-## Запуск сервера *Jupyter*
-
-В данной папке также присутствует скрипт для запуска *Jupyter* на сервере, что можно реализовать так:
+## Launching *Jupyter* server
 
 ```bash
 cd recsys
 sh run_jupyter_server.sh
 ```
 
->Note: В случае успешного запуска сервер будет доступен по адресу http://localhost:8888
+>Note: Upon successful launch, the server will be accessible at http://localhost:8888
 
-## Сохранение рекомендаций и кандидатов для моделирования
+## Saving recommendations and candidates for modeling
 
-В процессе выполнения кода в тетрадке, будут постепенно создаваться следующие файлы с данными:
+During the code execution from the notebook, the following data files will be created:
 
-* `top_popular.parquet` => Топ-100 товаров (дефолтные рекомендации)
-* `similar.parquet` => Схожие товары (онлайн рекомендации)
-* `candidates_train.parquet` => Кандидаты (рекомендации) для тренировки ранжирующей модели
-* `candidates_inference.parquet` => Кандидаты для ранжирования
-* `catboost_model.cmb` => Наилучшая по метрикам качества катбуст-модель
+* `top_popular.parquet` => Top-100 items (default recommendations)
+* `similar.parquet` => Similar items (online recommendations)
+* `candidates_train.parquet` => Candidates (recommendations) for training a ranking model
+* `candidates_inference.parquet` => Candidates for ranking
+* `catboost_model.cmb` => The best catboost model according to metrics
 
-> Note: Данные файлы не отслеживаются и не видны в репозитории
+> Note: These files are not tracked and thus are not visible in the repository
 
-Файлы будут сохраняться в директории [postgres_data](../airflow_service/postgres_data/), откуда они будут посредством выполнения *DAG*-ов загружаться в базу данных, а далее использоваться либо для переобучения ранжирующей модели, либо в веб-сервисе. Данный шаг предусмотрен для сохранения данных не только в *S3*, но и в базе данных, откуда они будут выгружаться для других задач.
+Files will be saved in [postgres_data](../airflow_service/postgres_data/) directory from where they will be loaded to Postgres database via executing *DAG*s and then be used either for re-training of a ranking model or for the web service. This step is introduced for the purpose of not only storing the data in *S3* but also in the database from where the data will be loaded for other tasks.
